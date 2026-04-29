@@ -178,7 +178,7 @@
         </section>
     </main>
 </div>
-FV
+
 <button class="chat-trigger" onclick="openChat()">
     <i class="fa-solid fa-comments"></i>
 </button>
