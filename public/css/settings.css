@@ -1,0 +1,322 @@
+/* ================= GLOBAL SETTINGS ================= */
+:root {
+    --primary-color: #E2A695;
+    --primary-hover: #d49583;
+    --primary-lite: #FDF0ED;
+    --text-main: #4A3A35;
+    --text-muted: #888;
+    --danger: #dc2626;
+    --bg-white: #ffffff;
+}
+
+.settings-container {
+    max-width: 1000px; /* Ukuran lebih pas untuk kenyamanan mata */
+    margin: 40px auto;
+    padding: 0 25px;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.settings-header h1 { 
+    font-size: 32px; 
+    color: var(--text-main); 
+    font-weight: 800; 
+    letter-spacing: -0.5px;
+}
+
+.settings-header p { 
+    color: var(--text-muted); 
+    margin-top: 8px;
+    font-size: 16px;
+}
+
+/* ================= TABS ================= */
+.settings-tabs {
+    display: flex;
+    gap: 15px;
+    margin: 35px 0;
+    border-bottom: 2px solid #f3f3f3;
+}
+
+.tab-btn {
+    padding: 12px 20px;
+    border: none;
+    background: none;
+    font-weight: 700;
+    color: #bbb;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 10px 10px 0 0;
+}
+
+.tab-btn:hover {
+    color: var(--primary-color);
+    background: var(--primary-lite);
+}
+
+.tab-btn.active { 
+    color: var(--primary-color); 
+}
+
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 0; width: 100%; height: 3px;
+    background: var(--primary-color);
+    border-radius: 10px;
+}
+
+/* ================= CARDS ================= */
+.profile-settings-card {
+    background: var(--bg-white);
+    border-radius: 35px; /* Lebih rounded agar estetik */
+    padding: 45px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.04);
+    border: 1px solid rgba(0,0,0,0.02);
+}
+
+/* ================= LAYOUT GRID ================= */
+.profile-layout-grid {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 50px;
+    align-items: start;
+}
+
+/* ================= AVATAR SECTION ================= */
+.avatar-column { 
+    text-align: center;
+    position: sticky;
+    top: 20px;
+}
+
+.field-label-text {
+    font-size: 13px;
+    font-weight: 700;
+    color: #7a6a63;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.avatar-wrapper {
+    width: 170px;
+    height: 170px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    border: 6px solid #fff;
+    box-shadow: 0 15px 35px rgba(226, 166, 149, 0.25);
+    overflow: hidden;
+    background: #f8f8f8;
+}
+
+#avatar-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.avatar-wrapper:hover #avatar-preview {
+    transform: scale(1.1);
+}
+
+.avatar-btns {
+    display: flex;
+    flex-direction: column; /* Vertikal lebih rapi untuk tombol kecil */
+    align-items: center;
+    gap: 12px;
+}
+
+.btn-upload-label {
+    background: var(--primary-color);
+    color: white;
+    padding: 10px 24px;
+    border-radius: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 13px;
+    transition: 0.3s;
+    box-shadow: 0 8px 15px rgba(226, 166, 149, 0.3);
+}
+
+.btn-upload-label:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 20px rgba(226, 166, 149, 0.4);
+}
+
+.btn-remove-lite {
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+    transition: 0.3s;
+}
+
+.btn-remove-lite:hover { color: var(--danger); }
+
+/* ================= FORM FIELDS ================= */
+.form-grid-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 10px;
+}
+
+.form-group input, 
+.form-group textarea {
+    width: 100%;
+    padding: 16px 20px;
+    border: 2px solid #f5f5f5;
+    border-radius: 18px;
+    font-size: 15px;
+    color: var(--text-main);
+    transition: all 0.3s ease;
+    background: #fcfcfc;
+}
+
+.form-group input:focus, 
+.form-group textarea:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    background: #fff;
+    box-shadow: 0 10px 20px rgba(226, 166, 149, 0.08);
+}
+
+.readonly-input { 
+    background-color: #f1f1f1 !important; 
+    color: #999 !important; 
+    border-color: #eee !important;
+    cursor: not-allowed;
+}
+
+.input-wrapper-badge { 
+    position: relative; 
+}
+
+.badge-verified-inline {
+    position: absolute; 
+    right: 18px; 
+    top: 50%; 
+    transform: translateY(-50%);
+    font-size: 11px; 
+    color: #10B981; 
+    font-weight: 800;
+    background: #ecfdf5;
+    padding: 4px 10px;
+    border-radius: 10px;
+}
+
+.form-actions-align {
+    margin-top: 40px;
+    text-align: right;
+}
+
+.btn-save-settings {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 16px 45px;
+    border-radius: 20px;
+    font-weight: 800;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 10px 25px rgba(226, 166, 149, 0.3);
+}
+
+.btn-save-settings:hover {
+    background: var(--primary-hover);
+    transform: scale(1.03);
+}
+
+/* ================= DANGER ZONE ================= */
+.data-card-danger { 
+    border: 2px solid #fff5f5; 
+}
+
+.danger-header-row { 
+    display: flex; 
+    align-items: center; 
+    gap: 12px; 
+    color: var(--danger); 
+    margin-bottom: 8px;
+}
+
+.danger-header-row h3 { font-weight: 800; }
+
+.data-item-row {
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    padding: 25px 0; 
+    border-bottom: 1px solid #fcfcfc;
+}
+
+.data-info-text h4 { color: var(--text-main); font-weight: 700; margin-bottom: 4px; }
+.data-info-text p { color: var(--text-muted); font-size: 14px; }
+
+.btn-danger-outline {
+    background: #fff; 
+    color: var(--danger); 
+    border: 2px solid #fecaca;
+    padding: 10px 22px; 
+    border-radius: 15px; 
+    cursor: pointer; 
+    font-weight: 700;
+    transition: 0.3s;
+}
+
+.btn-danger-outline:hover {
+    background: #fee2e2;
+    border-color: var(--danger);
+}
+
+.btn-danger-solid {
+    background: var(--danger); 
+    color: white; 
+    border: none;
+    padding: 12px 24px; 
+    border-radius: 15px; 
+    cursor: pointer; 
+    font-weight: 800;
+    transition: 0.3s;
+}
+
+.btn-danger-solid:hover {
+    background: #b91c1c;
+    box-shadow: 0 8px 20px rgba(220, 38, 38, 0.3);
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 850px) {
+    .profile-layout-grid {
+        grid-template-columns: 1fr;
+    }
+    .avatar-column {
+        position: static;
+        margin-bottom: 30px;
+    }
+    .form-grid-inner { 
+        grid-template-columns: 1fr; 
+    }
+    .profile-settings-card {
+        padding: 25px;
+    }
+}
