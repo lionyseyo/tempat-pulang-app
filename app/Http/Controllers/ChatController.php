@@ -18,56 +18,55 @@ class ChatController extends Controller
         ]);
 
         $userMessage = $request->message;
+        $userId = Auth::id() ?? 0;
 
         try {
             // 2. Simpan pesan User ke Database
             Chat::create([
-                'user_id' => Auth::id() ?? 0, // fallback jika user belum login
+                'user_id' => $userId,
                 'message' => $userMessage,
                 'is_bot' => false
             ]);
 
             // 3. Ambil API Key dari ENV
-            $apiKey = env('GEMINI_API_KEY');
+            $apiKey = env('CLAUDE_API_KEY');
             if (!$apiKey) {
-                Log::error('Gemini API Key tidak ditemukan di file .env');
-                return response()->json(['message' => 'Konfigurasi API rusak.. 😔'], 500);
+                Log::error('Claude API Key tidak ditemukan di file .env');
+                return response()->json(['message' => 'Kunci API belum dipasang.. 😔'], 500);
             }
 
-            // 4. Instruksi Karakter AI
-            $systemInstruction = "Nama kamu adalah 'Teman Bicara'. Kamu adalah pendamping kesehatan mental yang empati, lembut, dan menenangkan. Tugasmu: Mendengarkan, memberikan validasi perasaan, dan kata-kata penguatan. Gunakan Bahasa Indonesia yang hangat. Jangan terlalu kaku.";
+            // 4. Panggil API Claude
+            // Kita pakai model claude-3-haiku karena paling murah dan cepat
+            $response = Http::withoutVerifying() // Agar aman di localhost/XAMPP
+                ->withHeaders([
+                    'x-api-key' => $apiKey,
+                    'anthropic-version' => '2023-06-01', // Wajib ada untuk Claude
+                    'content-type' => 'application/json',
+                ])
+                ->timeout(30)
+                ->post("https://api.anthropic.com/v1/messages", [
+                    'model' => 'claude-3-haiku-20240307',
+                    'max_tokens' => 1024,
+                    'system' => "Nama kamu adalah 'Teman Bicara'. Kamu adalah pendamping kesehatan mental yang sangat empati, lembut, dan menenangkan. Tugasmu mendengarkan curhatan user dan memberikan penguatan. Gunakan Bahasa Indonesia yang sangat hangat dan santai seperti sahabat dekat.",
+                    'messages' => [
+                        ['role' => 'user', 'content' => $userMessage]
+                    ],
+                ]);
 
-            // 5. Request ke Gemini API
-            $apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={$apiKey}";
-
-            $response = Http::withHeaders([
-                'Content-Type' => 'application/json',
-            ])->timeout(30)->post($apiUrl, [
-                'contents' => [[
-                    'parts' => [['text' => $systemInstruction . "\n\nUser curhat: " . $userMessage]]
-                ]],
-                'generationConfig' => [
-                    'temperature' => 0.7,
-                    'maxOutputTokens' => 800,
-                ]
-            ]);
-
-            // 6. Cek Respon API
+            // 5. Cek Respon API
             if ($response->successful()) {
                 $data = $response->json();
-                Log::info('Gemini API raw response:', $data);
-
-                // Parsing lebih aman
-                $botResponse = $data['candidates'][0]['content']['parts'][0]['text']
-                    ?? "Aku di sini mendengarkanmu, tapi aku sedang kesulitan merangkai kata. Bisa ulangi? 🤍";
+                
+                // Claude menyimpan teks balasannya di content[0]['text']
+                $botResponse = $data['content'][0]['text'] ?? "Aku di sini mendengarkanmu, tapi aku sedang kesulitan merangkai kata. 🤍";
             } else {
-                Log::error('Gemini API Error: ' . $response->status() . ' - ' . $response->body());
-                $botResponse = "Maaf ya, koneksiku ke pusat sedang terganggu.. 😔";
+                Log::error('Claude API Error: ' . $response->status() . ' - ' . $response->body());
+                $botResponse = "Maaf ya, pikiranku sedang sedikit bising. Bisa kamu ulangi ceritanya? 🕊️";
             }
 
-            // 7. Simpan balasan Bot ke Database
+            // 6. Simpan balasan Bot ke Database
             Chat::create([
-                'user_id' => Auth::id() ?? 0,
+                'user_id' => $userId,
                 'message' => $botResponse,
                 'is_bot' => true
             ]);
@@ -78,7 +77,7 @@ class ChatController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            Log::error('Chatbot Exception: ' . $e->getMessage());
+            Log::error('Claude Exception: ' . $e->getMessage());
             return response()->json([
                 'status' => 'error',
                 'message' => "Sepertinya ada gangguan teknis. Aku tetap di sini untukmu."
@@ -88,7 +87,6 @@ class ChatController extends Controller
 
     public function getHistory()
     {
-        // Ambil riwayat chat user yang sedang login
         $chats = Chat::where('user_id', Auth::id() ?? 0)
                      ->orderBy('created_at', 'asc')
                      ->get();
